@@ -1,15 +1,16 @@
-forceexit
 <script setup lang="ts">
 import type { MsgBoxObject } from '@/components/general/MessageBox.vue';
 import type MessageBox from '@/components/general/MessageBox.vue';
 
 import type { ForceExitPayload } from '@/types';
+import { useI18n } from 'vue-i18n';
 
 import ForceEntryForm from './ForceEntryForm.vue';
 
 const botStore = useBotStore();
 const forceEnter = ref<boolean>(false);
 const msgBox = ref<typeof MessageBox>();
+const { t } = useI18n();
 
 const isRunning = computed((): boolean => {
   return botStore.activeBot.botState?.state === 'running';
@@ -17,8 +18,8 @@ const isRunning = computed((): boolean => {
 
 const handleStopBot = () => {
   const msg: MsgBoxObject = {
-    title: 'Stop Bot',
-    message: 'Stop the bot loop from running?',
+    title: t('botControls.stopTitle'),
+    message: t('botControls.stopMessage'),
     accept: () => {
       botStore.activeBot.stopBot();
     },
@@ -28,9 +29,8 @@ const handleStopBot = () => {
 
 const handleStopBuy = () => {
   const msg: MsgBoxObject = {
-    title: 'Pause - Stop Entering',
-    message:
-      'Freqtrade will continue to handle open trades, but will not enter new trades or increase position sizes.',
+    title: t('botControls.pauseTitle'),
+    message: t('botControls.pauseMessage'),
     accept: () => {
       botStore.activeBot.stopBuy();
     },
@@ -40,8 +40,8 @@ const handleStopBuy = () => {
 
 const handleReloadConfig = () => {
   const msg: MsgBoxObject = {
-    title: 'Reload',
-    message: 'Reload configuration (including strategy)?',
+    title: t('botControls.reloadTitle'),
+    message: t('botControls.reloadMessage'),
     accept: () => {
       console.log('reload...');
       botStore.activeBot.reloadConfig();
@@ -52,8 +52,8 @@ const handleReloadConfig = () => {
 
 const handleForceExit = () => {
   const msg: MsgBoxObject = {
-    title: 'ForceExit all',
-    message: 'Really forceexit ALL trades?',
+    title: t('botControls.forceExitAllTitle'),
+    message: t('botControls.forceExitAllMessage'),
     accept: () => {
       const payload: ForceExitPayload = {
         tradeid: 'all',
@@ -72,7 +72,7 @@ const handleForceExit = () => {
       size="large"
       severity="secondary"
       :disabled="!botStore.activeBot.isTrading || isRunning"
-      title="Start Trading"
+      :title="$t('botControls.startTitle')"
       @click="botStore.activeBot.startBot()"
     >
       <template #icon>
@@ -83,7 +83,7 @@ const handleForceExit = () => {
       size="large"
       severity="secondary"
       :disabled="!botStore.activeBot.isTrading || !isRunning"
-      title="Stop Trading - Also stops handling open trades."
+      :title="$t('botControls.stopButtonHint')"
       @click="handleStopBot()"
     >
       <template #icon>
@@ -94,7 +94,7 @@ const handleForceExit = () => {
       size="large"
       severity="secondary"
       :disabled="!botStore.activeBot.isTrading || !isRunning"
-      title="Pause (StopBuy) - Freqtrade will continue to handle open trades, but will not enter new trades or increase position sizes."
+      :title="$t('botControls.pauseButtonHint')"
       @click="handleStopBuy()"
     >
       <template #icon>
@@ -105,7 +105,7 @@ const handleForceExit = () => {
       size="large"
       severity="secondary"
       :disabled="!botStore.activeBot.isTrading"
-      title="Reload Config - reloads configuration including strategy, resetting all settings changed on the fly."
+      :title="$t('botControls.reloadButtonHint')"
       @click="handleReloadConfig()"
     >
       <template #icon>
@@ -116,7 +116,7 @@ const handleForceExit = () => {
       severity="secondary"
       size="large"
       :disabled="!botStore.activeBot.isTrading"
-      title="Force exit all"
+      :title="$t('botControls.forceExitAllButton')"
       @click="handleForceExit()"
     >
       <template #icon>
@@ -128,7 +128,7 @@ const handleForceExit = () => {
       size="large"
       severity="secondary"
       :disabled="!botStore.activeBot.isTrading || !isRunning"
-      title="Force enter - Immediately enter a trade at an optional price. Exits are then handled according to strategy rules."
+      :title="$t('botControls.forceEnterHint')"
       @click="forceEnter = true"
     >
       <template #icon>

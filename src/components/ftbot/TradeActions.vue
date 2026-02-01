@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Trade, BotFeatures } from '@/types';
+import { useI18n } from 'vue-i18n';
 
 withDefaults(
   defineProps<{
@@ -19,6 +20,7 @@ defineEmits<{
   deleteTrade: [trade: Trade];
   forceEntry: [trade: Trade];
 }>();
+const { t } = useI18n();
 </script>
 
 <template>
@@ -28,8 +30,8 @@ defineEmits<{
       class="justify-start!"
       size="small"
       severity="secondary"
-      title="Forceexit"
-      label="Forceexit"
+      :title="$t('tradeActions.forceExit')"
+      :label="$t('tradeActions.forceExit')"
       @click="$emit('forceExit', trade)"
     >
       <template #icon>
@@ -41,8 +43,8 @@ defineEmits<{
       size="small"
       class="justify-start!"
       severity="secondary"
-      title="Forceexit limit"
-      label="Forceexit limit"
+      :title="$t('tradeActions.forceExitLimit')"
+      :label="$t('tradeActions.forceExitLimit')"
       @click="$emit('forceExit', trade, 'limit')"
     >
       <template #icon>
@@ -54,8 +56,8 @@ defineEmits<{
       class="justify-start!"
       size="small"
       severity="secondary"
-      title="Forceexit market"
-      label="Forceexit market"
+      :title="$t('tradeActions.forceExitMarket')"
+      :label="$t('tradeActions.forceExitMarket')"
       @click="$emit('forceExit', trade, 'market')"
     >
       <template #icon>
@@ -67,8 +69,8 @@ defineEmits<{
       class="justify-start!"
       size="small"
       severity="secondary"
-      title="Forceexit partial"
-      label="Forceexit partial"
+      :title="$t('tradeActions.forceExitPartial')"
+      :label="$t('tradeActions.forceExitPartial')"
       @click="$emit('forceExitPartial', trade)"
     >
       <template #icon>
@@ -80,8 +82,8 @@ defineEmits<{
       class="justify-start!"
       size="small"
       severity="secondary"
-      title="Cancel open orders"
-      label="Cancel open orders"
+      :title="$t('tradeActions.cancelOrders')"
+      :label="$t('tradeActions.cancelOrders')"
       @click="$emit('cancelOpenOrder', trade)"
     >
       <template #icon>
@@ -93,8 +95,8 @@ defineEmits<{
       class="justify-start!"
       size="small"
       severity="secondary"
-      title="Increase position"
-      label="Increase position"
+      :title="$t('tradeActions.increasePosition')"
+      :label="$t('tradeActions.increasePosition')"
       @click="$emit('forceEntry', trade)"
     >
       <template #icon>
@@ -106,8 +108,8 @@ defineEmits<{
       class="justify-start!"
       size="small"
       severity="secondary"
-      title="Reload"
-      label="Reload"
+      :title="$t('tradeActions.reload')"
+      :label="$t('tradeActions.reload')"
       @click="$emit('reloadTrade', trade)"
     >
       <template #icon><i-mdi-reload-alert /> </template>
@@ -116,8 +118,8 @@ defineEmits<{
       class="justify-start!"
       size="small"
       severity="secondary"
-      title="Delete trade"
-      label="Delete trade"
+      :title="$t('tradeActions.delete')"
+      :label="$t('tradeActions.delete')"
       @click="$emit('deleteTrade', trade)"
     >
       <template #icon>

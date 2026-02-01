@@ -60,7 +60,7 @@ function stopEditBot(botId: string) {
 
 <template>
   <div v-if="botStore.botCount > 0" class="w-full mx-2">
-    <h3 v-if="!small" class="font-bold text-2xl mb-2">Available bots</h3>
+    <h3 v-if="!small" class="font-bold text-2xl mb-2">{{ $t('botList.title') }}</h3>
     <ul
       ref="sortContainer"
       class="flex flex-col divide-y border-x border-surface-500 rounded-sm border-y divide-solid divide-surface-500"
@@ -71,7 +71,7 @@ function stopEditBot(botId: string) {
         :active="bot.botId === botStore.selectedBot"
         button
         :title="`${bot.botId} - ${bot.botName} - ${bot.botUrl} - ${
-          botStore.botStores[bot.botId]?.isBotLoggedIn ? '' : 'Login info expired!'
+          botStore.botStores[bot.botId]?.isBotLoggedIn ? '' : $t('botList.loginExpired')
         }`"
         class="flex items-center p-2"
         :class="{
@@ -97,6 +97,6 @@ function stopEditBot(botId: string) {
         />
       </li>
     </ul>
-    <LoginModal v-if="!small" ref="loginModal" class="mt-2" login-text="Add new bot" />
+    <LoginModal v-if="!small" ref="loginModal" class="mt-2" :login-text="$t('botList.addBot')" />
   </div>
 </template>

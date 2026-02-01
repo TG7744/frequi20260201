@@ -2,6 +2,7 @@
 import type { MultiDeletePayload, MultiForceExitPayload, Trade } from '@/types';
 
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 enum ModalReasons {
   removeTrade,
@@ -21,18 +22,19 @@ const props = withDefaults(
     emptyText?: string;
   }>(),
   {
-    title: 'Trades',
+    title: '',
     stakeCurrency: '',
     activeTrades: false,
     showFilter: false,
     multiBotView: false,
-    emptyText: 'No Trades to show.',
+    emptyText: '',
   },
 );
 
 const botStore = useBotStore();
 const router = useRouter();
 const settingsStore = useSettingsStore();
+const { t } = useI18n();
 const currentPage = ref(1);
 const selectedItem = ref();
 const filterText = ref('');
@@ -49,33 +51,39 @@ function formatPriceWithDecimals(price: number) {
   return formatPrice(price, botStore.activeBot.stakeCurrencyDecimals);
 }
 
-const tableFields = ref([
-  { field: 'trade_id', header: 'ID' },
-  { field: 'pair', header: 'Pair' },
-  { field: 'amount', header: 'Amount' },
-  props.activeTrades
-    ? { field: 'stake_amount', header: 'Stake amount' }
-    : { field: 'max_stake_amount', header: 'Total stake amount' },
-  {
-    field: 'open_rate',
-    header: 'Open rate',
-  },
-  {
-    field: props.activeTrades ? 'current_rate' : 'close_rate',
-    header: props.activeTrades ? 'Current rate' : 'Close rate',
-  },
-  {
-    field: 'profit',
-    header: props.activeTrades ? 'Current profit %' : 'Profit %',
-  },
-  { field: 'open_timestamp', header: 'Open date' },
-  ...(props.activeTrades
-    ? [{ field: 'actions', header: '' }]
-    : [
-        { field: 'close_timestamp', header: 'Close date' },
-        { field: 'exit_reason', header: 'Close Reason' },
-      ]),
-]);
+const tableFields = computed(() => {
+  const fields = [
+    { field: 'trade_id', header: t('tradeList.id') },
+    { field: 'pair', header: t('tradeList.pair') },
+    { field: 'amount', header: t('tradeList.amount') },
+    props.activeTrades
+      ? { field: 'stake_amount', header: t('tradeList.stakeAmount') }
+      : { field: 'max_stake_amount', header: t('tradeList.totalStake') },
+    {
+      field: 'open_rate',
+      header: t('tradeList.openRate'),
+    },
+    {
+      field: props.activeTrades ? 'current_rate' : 'close_rate',
+      header: props.activeTrades ? t('tradeList.currentRate') : t('tradeList.closeRate'),
+    },
+    {
+      field: 'profit',
+      header: props.activeTrades ? t('tradeList.currentProfit') : t('tradeList.profit'),
+    },
+    { field: 'open_timestamp', header: t('tradeList.openDate') },
+    ...(props.activeTrades
+      ? [{ field: 'actions', header: '' }]
+      : [
+          { field: 'close_timestamp', header: t('tradeList.closeDate') },
+          { field: 'exit_reason', header: t('tradeList.closeReason') },
+        ]),
+  ];
+  if (props.multiBotView) {
+    fields.unshift({ field: 'botName', header: t('tradeList.bot') });
+  }
+  return fields;
+});
 
 if (props.multiBotView) {
   tableFields.value.unshift({ field: 'botName', header: 'Bot' });
@@ -85,7 +93,11 @@ const feOrderType = ref<string | undefined>(undefined);
 function forceExitHandler(item: Trade, ordertype: string | undefined = undefined) {
   feTrade.value = item;
   confirmExitValue.value = ModalReasons.forceExit;
-  confirmExitText.value = `Really exit trade ${item.trade_id} (Pair ${item.pair}) using ${ordertype} Order?`;
+  confirmExitText.value = t('tradeList.forceExitConfirm', {
+    id: item.trade_id,
+    pair: item.pair,
+    order: ordertype ?? t('tradeList.order'),
+  });
   feOrderType.value = ordertype;
   if (settingsStore.confirmDialog === true) {
     removeTradeVisible.value = true;
@@ -128,7 +140,7 @@ function forceExitExecuter() {
 }
 
 function removeTradeHandler(item: Trade) {
-  confirmExitText.value = `Really delete trade ${item.trade_id} (Pair ${item.pair})?`;
+  confirmExitText.value = t('tradeList.deleteConfirm', { id: item.trade_id, pair: item.pair });
   confirmExitValue.value = ModalReasons.removeTrade;
   feTrade.value = item;
   removeTradeVisible.value = true;
@@ -140,7 +152,10 @@ function forceExitPartialHandler(item: Trade) {
 }
 
 function cancelOpenOrderHandler(item: Trade) {
-  confirmExitText.value = `Cancel open order for trade ${item.trade_id} (Pair ${item.pair})?`;
+  confirmExitText.value = t('tradeList.cancelOrderConfirm', {
+    id: item.trade_id,
+    pair: item.pair,
+  });
   feTrade.value = item;
   confirmExitValue.value = ModalReasons.cancelOpenOrder;
   removeTradeVisible.value = true;
@@ -180,6 +195,14 @@ watch(
     }
   },
 );
+
+const emptyTextComputed = computed(() =>
+  props.emptyText
+    ? props.emptyText
+    : props.activeTrades
+      ? t('tradeList.noOpen')
+      : t('tradeList.noTrades'),
+);
 </script>
 
 <template>
@@ -209,7 +232,7 @@ watch(
       @row-click="onRowClicked"
     >
       <template #empty>
-        {{ emptyText }}
+        {{ emptyTextComputed }}
       </template>
       <Column
         v-for="column in tableFields"
@@ -272,7 +295,12 @@ watch(
       <template v-if="showFilter" #paginatorstart> </template>
       <template v-if="showFilter" #paginatorend>
         <div class="flex justify-end gap-2 p-2">
-          <InputText v-model="filterText" placeholder="Filter" class="w-64" size="small" />
+          <InputText
+            v-model="filterText"
+            :placeholder="$t('common.filter')"
+            class="w-64"
+            size="small"
+          />
         </div>
       </template>
     </DataTable>
@@ -289,11 +317,11 @@ watch(
       position-increase
     />
 
-    <Dialog v-model:visible="removeTradeVisible" :modal="true" header="Exit trade">
+    <Dialog v-model:visible="removeTradeVisible" :modal="true" :header="$t('tradeList.exitTrade')">
       <p>{{ confirmExitText }}</p>
       <template #footer>
-        <Button label="Cancel" @click="removeTradeVisible = false" />
-        <Button label="Confirm" severity="danger" @click="forceExitExecuter" />
+        <Button :label="$t('common.cancel')" @click="removeTradeVisible = false" />
+        <Button :label="$t('common.confirm')" severity="danger" @click="forceExitExecuter" />
       </template>
     </Dialog>
   </div>

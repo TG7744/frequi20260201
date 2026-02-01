@@ -25,7 +25,7 @@ withDefaults(
         <Button
           severity="secondary"
           variant="outlined"
-          title="Delete this value."
+          :title="$t('form.deleteValue')"
           class="flex align-items-center justify-content-center"
           @click="values.splice(idx, 1)"
         >
@@ -36,7 +36,7 @@ withDefaults(
       </div>
     </div>
     <Button
-      :title="`Add new value`"
+      :title="$t('form.addValue')"
       severity="secondary"
       class="mt-auto flex align-items-center justify-content-center"
       @click="values.push('')"

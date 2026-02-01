@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import type { AuthStorageWithBotId } from '@/types';
+import { useI18n } from 'vue-i18n';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     loginText?: string;
   }>(),
   {
-    loginText: 'Login',
+    loginText: '',
   },
 );
 const loginViewOpen = ref(false);
 const loginInfo = ref<AuthStorageWithBotId | undefined>(undefined);
+const { t } = useI18n();
+const displayLoginText = computed(() => props.loginText || t('common.login'));
 
 const handleLoginResult = (result: boolean) => {
   if (result) {
@@ -31,12 +34,12 @@ defineExpose({
 <template>
   <div>
     <Button severity="secondary" @click="openLoginModal()"
-      ><i-mdi-login class="me-1" />{{ loginText }}</Button
+      ><i-mdi-login class="me-1" />{{ displayLoginText }}</Button
     >
     <Dialog
       id="modal-prevent-closing"
       v-model:visible="loginViewOpen"
-      header="Login to your bot"
+      :header="$t('login.modalTitle')"
       :dismissable-mask="true"
     >
       <BotLogin

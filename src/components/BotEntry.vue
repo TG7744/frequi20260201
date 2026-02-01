@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { BotDescriptor } from '@/types';
 import type MessageBox from './general/MessageBox.vue';
+import { useI18n } from 'vue-i18n';
 const msgBox = ref<typeof MessageBox>();
+const { t } = useI18n();
 
 const props = defineProps<{
   bot: BotDescriptor;
@@ -16,8 +18,11 @@ function confirmRemoveBot() {
 
 function removeBotQuestion() {
   msgBox.value?.show({
-    title: 'Logout confirmation',
-    message: `Really remove (logout) from ${props.bot.botName} (${props.bot.botId})?`,
+    title: t('botEntry.logoutConfirmTitle'),
+    message: t('botEntry.logoutConfirmMessage', {
+      name: props.bot.botName,
+      id: props.bot.botId,
+    }),
     accept: () => {
       confirmRemoveBot();
     },
@@ -47,14 +52,14 @@ const autoRefreshLoc = computed({
         <ToggleSwitch v-model="autoRefreshLoc" class="mr-2" />
         <div
           v-if="selectedBotStore.isBotLoggedIn"
-          :title="selectedBotStore.isBotOnline ? 'Online' : 'Offline'"
+          :title="selectedBotStore.isBotOnline ? $t('common.online') : $t('common.offline')"
         >
           <i-mdi-circle
             class="mx-1"
             :class="selectedBotStore.isBotOnline ? 'text-green-500' : 'text-red-500'"
           />
         </div>
-        <div v-else title="Login info expired, please login again.">
+        <div v-else :title="$t('botEntry.loginExpired')">
           <i-mdi-cancel class="text-red-500 mx-1" />
         </div>
       </div>
@@ -64,7 +69,7 @@ const autoRefreshLoc = computed({
           v-if="selectedBotStore.isBotLoggedIn"
           size="small"
           severity="secondary"
-          title="Edit bot"
+          :title="$t('botEntry.editBot')"
           @click="$emit('edit')"
         >
           <i-mdi-pencil />
@@ -73,12 +78,17 @@ const autoRefreshLoc = computed({
           v-else
           size="small"
           severity="secondary"
-          title="Login again"
+          :title="$t('botEntry.loginAgain')"
           @click="$emit('editLogin')"
         >
           <i-mdi-login />
         </Button>
-        <Button size="small" severity="secondary" title="Delete bot" @click="removeBotQuestion">
+        <Button
+          size="small"
+          severity="secondary"
+          :title="$t('botEntry.deleteBot')"
+          @click="removeBotQuestion"
+        >
           <i-mdi-delete />
         </Button>
       </div>

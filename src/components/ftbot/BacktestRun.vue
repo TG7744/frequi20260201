@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { BacktestPayload } from '@/types';
+import { useI18n } from 'vue-i18n';
 
 const botStore = useBotStore();
 const btStore = useBtStore();
+const { t } = useI18n();
 
 function clickBacktest() {
   const btPayload: BacktestPayload = {
@@ -49,7 +51,7 @@ function clickBacktest() {
 
 <template>
   <div class="mb-2">
-    <span>Strategy</span>
+    <span>{{ $t('backtestRun.strategy') }}</span>
     <StrategySelect v-model="btStore.strategy"></StrategySelect>
   </div>
   <div
@@ -57,13 +59,13 @@ function clickBacktest() {
     :disabled="botStore.activeBot.backtestRunning"
   >
     <!-- Backtesting parameters -->
-    <h3 class="font-bold mb-2 col-span-2 text-center">Backtesting parameters</h3>
-    <label for="timeframe-select">Timeframe:</label>
+    <h3 class="font-bold mb-2 col-span-2 text-center">{{ $t('backtestRun.parameters') }}</h3>
+    <label for="timeframe-select">{{ $t('backtestRun.timeframe') }}</label>
     <TimeframeSelect id="timeframe-select" v-model="btStore.selectedTimeframe" size="small" />
     <label for="timeframe-detail-select" class="flex justify-end items-center gap-2"
-      >Detail Timeframe:
+      >{{ $t('backtestRun.detailTimeframe') }}
       <InfoBox
-        hint="Detail timeframe, to simulate intra-candle results. Not setting this will not use this functionality."
+        :hint="$t('backtestRun.detailHint')"
       />
     </label>
     <TimeframeSelect
@@ -73,67 +75,67 @@ function clickBacktest() {
       :below-timeframe="btStore.selectedTimeframe"
     />
 
-    <label for="max-open-trades">Max open trades:</label>
+    <label for="max-open-trades">{{ $t('backtestRun.maxOpenTrades') }}</label>
     <InputNumber
       id="max-open-trades"
       v-model="btStore.maxOpenTrades"
       size="small"
-      placeholder="Use strategy default"
+      :placeholder="$t('backtestRun.useStrategyDefault')"
       type="number"
     ></InputNumber>
-    <label for="starting-capital">Starting capital:</label>
+    <label for="starting-capital">{{ $t('backtestRun.startingCapital') }}</label>
     <InputNumber
       id="starting-capital"
       v-model="btStore.startingCapital"
       size="small"
-      placeholder="Use config default"
+      :placeholder="$t('backtestRun.useConfigDefault')"
       type="number"
       :step="0.001"
     ></InputNumber>
-    <label for="stake-amount-bool">Stake amount:</label>
+    <label for="stake-amount-bool">{{ $t('backtestRun.stakeAmount') }}</label>
     <div class="flex items-center">
       <div class="flex basis-full">
         <BaseCheckbox id="stake-amount-bool" v-model="btStore.stakeAmountUnlimited"
-          >Unlimited stake</BaseCheckbox
+          >{{ $t('backtestRun.unlimitedStake') }}</BaseCheckbox
         >
       </div>
       <InputNumber
         id="stake-amount"
         v-model="btStore.stakeAmount"
-        placeholder="Use strategy default"
+        :placeholder="$t('backtestRun.useStrategyDefault')"
         :step="0.01"
         size="small"
         :disabled="btStore.stakeAmountUnlimited"
       ></InputNumber>
     </div>
 
-    <label for="enable-protections">Enable Protections:</label>
+    <label for="enable-protections">{{ $t('backtestRun.enableProtections') }}</label>
     <BaseCheckbox id="enable-protections" v-model="btStore.enableProtections"></BaseCheckbox>
     <template v-if="botStore.activeBot.botFeatures.backtestFreqAI">
-      <label for="enable-cache">Cache Backtest results:</label>
+      <label for="enable-cache">{{ $t('backtestRun.cacheResults') }}</label>
       <BaseCheckbox id="enable-cache" v-model="btStore.allowCache"></BaseCheckbox>
     </template>
 
     <template v-if="botStore.activeBot.botFeatures.backtestFreqAI">
       <div class="flex justify-end items-center">
-        <span class="me-2">Enable FreqAI:</span>
+        <span class="me-2">{{ $t('backtestRun.enableFreqAI') }}</span>
         <InfoBox
-          hint="Assumes freqAI configuration is setup in the configuration, and the strategy is a freqAI strategy. Will fail if that's not the case."
+          :hint="$t('backtestRun.freqAiHint')"
         />
       </div>
       <BaseCheckbox id="enable-freqai" v-model="btStore.freqAI.enabled"></BaseCheckbox>
 
       <template v-if="btStore.freqAI.enabled">
-        <label for="freqai-identifier">FreqAI identifier:</label>
+        <label for="freqai-identifier">{{ $t('backtestRun.freqaiIdentifier') }}</label>
         <InputText
           id="freqai-identifier"
           v-model="btStore.freqAI.identifier"
-          placeholder="Use config default"
+          :placeholder="$t('backtestRun.useConfigDefault')"
           size="small"
         ></InputText>
       </template>
       <template v-if="btStore.freqAI.enabled">
-        <label for="freqai-model">FreqAI Model:</label>
+        <label for="freqai-model">{{ $t('backtestRun.freqaiModel') }}</label>
         <FreqaiModelSelect id="freqai-model" v-model="btStore.freqAI.model"></FreqaiModelSelect>
       </template>
     </template>
@@ -142,7 +144,7 @@ function clickBacktest() {
     <TimeRangeSelect v-model="btStore.timerange" class="mx-auto mt-2 col-span-2"></TimeRangeSelect>
   </div>
 
-  <h3 class="mt-3 font-bold text-2xl">Backtesting summary</h3>
+  <h3 class="mt-3 font-bold text-2xl">{{ $t('backtestRun.summary') }}</h3>
   <div class="flex flex-wrap md:flex-nowrap justify-between md:justify-center">
     <Button
       id="start-backtest"
@@ -155,7 +157,7 @@ function clickBacktest() {
       class="mx-1"
       @click="clickBacktest"
     >
-      Start backtest
+      {{ $t('backtestRun.start') }}
     </Button>
     <Button
       severity="secondary"
@@ -163,7 +165,7 @@ function clickBacktest() {
       class="mx-1"
       @click="botStore.activeBot.pollBacktest"
     >
-      Load backtest result
+      {{ $t('backtestRun.load') }}
     </Button>
     <Button
       severity="secondary"
@@ -171,7 +173,7 @@ function clickBacktest() {
       :disabled="!botStore.activeBot.backtestRunning"
       @click="botStore.activeBot.stopBacktest"
     >
-      Stop Backtest
+      {{ $t('backtestRun.stop') }}
     </Button>
     <Button
       severity="secondary"
@@ -179,7 +181,7 @@ function clickBacktest() {
       :disabled="botStore.activeBot.backtestRunning || !botStore.activeBot.canRunBacktest"
       @click="botStore.activeBot.removeBacktest"
     >
-      Reset Backtest
+      {{ $t('backtestRun.reset') }}
     </Button>
   </div>
 </template>

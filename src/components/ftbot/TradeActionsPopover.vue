@@ -2,6 +2,7 @@
 import type { Trade } from '@/types';
 import type { BotFeatures } from '@/types/features';
 import Popover from 'primevue/popover';
+import { useI18n } from 'vue-i18n';
 
 withDefaults(
   defineProps<{
@@ -49,6 +50,7 @@ function handleForceEntry(item: Trade) {
   emit('forceEntry', item);
 }
 const popover = ref<InstanceType<typeof Popover> | null>(null);
+const { t } = useI18n();
 </script>
 
 <template>
@@ -58,7 +60,7 @@ const popover = ref<InstanceType<typeof Popover> | null>(null);
       class="btn-xs"
       size="small"
       severity="secondary"
-      title="Actions"
+      :title="$t('common.actions')"
       @click="popover?.toggle"
     >
       <i-mdi-gesture-tap />
@@ -66,7 +68,7 @@ const popover = ref<InstanceType<typeof Popover> | null>(null);
     <Popover
       ref="popover"
       :target="`btn-actions-${id}`"
-      :title="`Actions for ${trade.pair}`"
+      :title="$t('tradeList.actionsFor', { pair: trade.pair })"
       triggers="manual"
       placement="left"
     >
@@ -85,7 +87,7 @@ const popover = ref<InstanceType<typeof Popover> | null>(null);
         class="mt-1 w-full text-start"
         size="small"
         severity="secondary"
-        label="Close Actions menu"
+        :label="$t('tradeList.closeActions')"
         @click="popover?.hide"
       >
         <template #icon><i-mdi-cancel class="me-1" /></template>

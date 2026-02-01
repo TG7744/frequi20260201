@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { MsgBoxObject } from '@/components/general/MessageBox.vue';
 import MessageBox from '@/components/general/MessageBox.vue';
+import { useI18n } from 'vue-i18n';
 
 import type { BacktestHistoryEntry } from '@/types';
 import InfoBox from '../general/InfoBox.vue';
@@ -9,6 +10,7 @@ const botStore = useBotStore();
 const msgBox = ref<typeof MessageBox>();
 const filterText = ref('');
 const filterTextDebounced = refDebounced(filterText, 350, { maxWait: 1000 });
+const { t } = useI18n();
 
 onMounted(() => {
   botStore.activeBot.getBacktestHistory();
@@ -16,8 +18,8 @@ onMounted(() => {
 
 function deleteBacktestResult(result: BacktestHistoryEntry) {
   const msg: MsgBoxObject = {
-    title: 'Delete result',
-    message: `Delete result ${result.filename} from disk?`,
+    title: t('backtestHistory.deleteTitle'),
+    message: t('backtestHistory.deleteConfirm', { name: result.filename }),
     accept: () => {
       botStore.activeBot.deleteBacktestHistoryResult(result);
     },
@@ -41,8 +43,8 @@ function rowClick(row) {
   <div>
     <Button
       class="float-end"
-      title="Refresh"
-      aria-label="Refresh"
+      :title="$t('common.refresh')"
+      :aria-label="$t('common.refresh')"
       variant="outlined"
       severity="secondary"
       @click="botStore.activeBot.getBacktestHistory"
@@ -50,8 +52,7 @@ function rowClick(row) {
       <i-mdi-refresh />
     </Button>
     <p>
-      Load Historic results from disk. You can click on multiple results to load all of them into
-      freqUI.
+      {{ $t('backtestHistory.description') }}
     </p>
     <div v-if="botStore.activeBot.backtestHistoryList.length > 0" class="flex align-center">
       <InputText
@@ -59,8 +60,8 @@ function rowClick(row) {
         v-model="filterText"
         type="text"
         size="small"
-        placeholder="Filter results"
-        title="Filter results"
+        :placeholder="$t('backtestHistory.filter')"
+        :title="$t('backtestHistory.filter')"
       />
     </div>
     <DataTable
@@ -75,8 +76,8 @@ function rowClick(row) {
       :value="filteredList"
       @row-click="rowClick"
     >
-      <Column field="strategy" header="Strategy2"></Column>
-      <Column field="timeframe" header="Details">
+      <Column field="strategy" :header="$t('backtestHistory.strategy')"></Column>
+      <Column field="timeframe" :header="$t('backtestHistory.details')">
         <template #body="{ data }">
           <strong>{{ data.timeframe }}</strong>
           <span v-if="data.backtest_start_ts && data.backtest_end_ts" class="ms-1">
@@ -86,13 +87,13 @@ function rowClick(row) {
           >
         </template>
       </Column>
-      <Column field="backtest_start_time" header="Backtest Time">
+      <Column field="backtest_start_time" :header="$t('backtestHistory.backtestTime')">
         <template #body="{ data }">
           <DateTimeTZ :date="data.backtest_start_time * 1000" />
         </template>
       </Column>
-      <Column field="filename" header="Filename"></Column>
-      <Column field="actions" header="Actions">
+      <Column field="filename" :header="$t('backtestHistory.filename')"></Column>
+      <Column field="actions" :header="$t('common.actions')">
         <template #body="{ data }">
           <div class="flex items-center">
             <InfoBox
@@ -104,7 +105,7 @@ function rowClick(row) {
               v-if="botStore.activeBot.botFeatures.backtestDelete"
               class="ms-1"
               size="small"
-              title="Load this Result."
+              :title="$t('backtestHistory.load')"
               :disabled="data.run_id in botStore.activeBot.backtestHistory"
               @click.stop="botStore.activeBot.getBacktestHistoryResult(data)"
             >
@@ -117,7 +118,7 @@ function rowClick(row) {
               class="ms-1"
               size="small"
               severity="secondary"
-              title="Delete this Result."
+              :title="$t('backtestHistory.delete')"
               :disabled="data.run_id in botStore.activeBot.backtestHistory"
               @click.stop="deleteBacktestResult(data)"
             >

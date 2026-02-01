@@ -15,7 +15,7 @@ const botStore = useBotStore();
         as="router-link"
         class="align-items-center"
         to="/open_trades"
-        label="Trades"
+        :label="$t('footer.trades')"
       >
         <template #icon>
           <i-mdi-folder-open height="24" width="24" />
@@ -29,7 +29,7 @@ const botStore = useBotStore();
         as="router-link"
         class="align-items-center"
         to="/trade_history"
-        label="History"
+        :label="$t('footer.history')"
       >
         <template #icon>
           <i-mdi-folder-lock height="24" width="24" />
@@ -43,7 +43,7 @@ const botStore = useBotStore();
         as="router-link"
         class="align-items-center"
         to="/pairlist"
-        label="Pairlist"
+        :label="$t('footer.pairlist')"
       >
         <template #icon>
           <i-mdi-view-list height="24" width="24" />
@@ -57,7 +57,7 @@ const botStore = useBotStore();
         as="router-link"
         class="align-items-center"
         to="/balance"
-        label="Balance"
+        :label="$t('footer.balance')"
       >
         <template #icon>
           <i-mdi-bank height="24" width="24" />
@@ -71,7 +71,7 @@ const botStore = useBotStore();
         as="router-link"
         class="align-items-center"
         to="/dashboard"
-        label="Dashboard"
+        :label="$t('nav.dashboard')"
       >
         <template #icon>
           <i-mdi-view-dashboard-outline height="24" width="24" />

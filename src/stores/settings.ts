@@ -9,6 +9,13 @@ export enum OpenTradeVizOptions {
   noOpenTrades = 'noOpenTrades',
 }
 
+const defaultLocale = () => {
+  if (typeof navigator !== 'undefined' && navigator.language.startsWith('zh')) {
+    return 'zh';
+  }
+  return 'en';
+};
+
 const notificationDefaults = {
   [FtWsMessageTypes.entryFill]: true,
   [FtWsMessageTypes.exitFill]: true,
@@ -38,6 +45,7 @@ export const useSettingsStore = defineStore('uiSettings', {
       multiPaneButtonsShowText: false,
       multiPairSelection: false,
       backtestAdditionalMetrics: ['profit_factor', 'expectancy'] as string[],
+      locale: defaultLocale() as 'en' | 'zh',
     };
   },
   getters: {
@@ -52,6 +60,9 @@ export const useSettingsStore = defineStore('uiSettings', {
     },
   },
   actions: {
+    setLocale(locale: 'en' | 'zh') {
+      this.locale = locale;
+    },
     async loadUIVersion() {
       if (import.meta.env.PROD) {
         try {

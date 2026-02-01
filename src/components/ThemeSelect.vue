@@ -44,9 +44,9 @@ function toggleNight() {
 <template>
   <Button
     variant="link"
-    title="Toggle Night Mode"
+    :title="$t('theme.toggle')"
     class="text-surface-200"
-    :label="showText ? 'Toggle Night Mode' : ''"
+    :label="showText ? $t('theme.toggle') : ''"
     @click="toggleNight"
   >
     <template #icon>

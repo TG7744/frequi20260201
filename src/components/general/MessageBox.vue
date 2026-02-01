@@ -32,12 +32,18 @@ defineExpose({ show });
     <template #footer>
       <Button
         class="min-w-30"
-        label="Cancel"
+        :label="$t('common.cancel')"
         variant="outlined"
         severity="secondary"
         @click="showRef = false"
       />
-      <Button class="min-w-30" label="Ok" severity="primary" autofocus @click="msgBoxOK" />
+      <Button
+        class="min-w-30"
+        :label="$t('common.ok')"
+        severity="primary"
+        autofocus
+        @click="msgBoxOK"
+      />
     </template>
   </Dialog>
 </template>

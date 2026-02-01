@@ -85,57 +85,65 @@ function refreshOHLCV(pair: string, columns: string[]) {
         :h="gridLayoutMultiPane.h"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Multi Pane">
+        <DraggableContainer :header="$t('trading.multiPane')">
           <div class="mt-1 flex justify-center">
             <BotControls class="mt-1 mb-2" />
           </div>
           <Tabs value="0" scrollable lazy>
             <TabList>
               <Tab value="0" severity="secondary">
-                <div title="Pairs combined">
+                <div :title="$t('trading.tabs.combined')">
                   <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1"
-                    >Pairs combined</span
+                    >{{ $t('trading.tabs.combined') }}</span
                   >
                   <i-mdi-view-list v-else />
                 </div>
               </Tab>
               <Tab value="1" severity="secondary">
-                <div title="General">
-                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">General</span>
+                <div :title="$t('trading.tabs.general')">
+                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">{{
+                    $t('trading.tabs.general')
+                  }}</span>
                   <i-mdi-information v-else />
                 </div>
               </Tab>
               <Tab value="2" severity="secondary">
-                <div title="Performance">
+                <div :title="$t('trading.tabs.performance')">
                   <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1"
-                    >Performance</span
+                    >{{ $t('trading.tabs.performance') }}</span
                   >
                   <i-mdi-chart-line v-else />
                 </div>
               </Tab>
               <Tab value="3" severity="secondary">
-                <div title="Balance">
-                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">Balance</span>
+                <div :title="$t('trading.tabs.balance')">
+                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">{{
+                    $t('trading.tabs.balance')
+                  }}</span>
                   <i-mdi-bank v-else />
                 </div>
               </Tab>
               <Tab value="4" severity="secondary">
-                <div title="Time Breakdown">
+                <div :title="$t('trading.tabs.timeBreakdown')">
                   <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1"
-                    >Time Breakdown</span
+                    >{{ $t('trading.tabs.timeBreakdown') }}</span
                   >
                   <i-mdi-folder-clock v-else />
                 </div>
               </Tab>
               <Tab value="5" severity="secondary">
-                <div title="Pairlist">
-                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">Pairlist</span>
+                <div :title="$t('trading.tabs.pairlist')">
+                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">{{
+                    $t('trading.tabs.pairlist')
+                  }}</span>
                   <i-mdi-format-list-group v-else />
                 </div>
               </Tab>
               <Tab value="6" severity="secondary">
-                <div title="Pair Locks">
-                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">Pair Locks</span>
+                <div :title="$t('trading.tabs.pairLocks')">
+                  <span v-if="settingsStore.multiPaneButtonsShowText" class="ms-1">{{
+                    $t('trading.tabs.pairLocks')
+                  }}</span>
                   <i-mdi-lock-alert v-else />
                 </div>
               </Tab>
@@ -181,13 +189,13 @@ function refreshOHLCV(pair: string, columns: string[]) {
         :h="gridLayoutOpenTrades.h"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Open Trades">
+        <DraggableContainer :header="$t('trading.openTrades')">
           <TradeList
             class="open-trades"
             :trades="botStore.activeBot.openTrades"
-            title="Open trades"
+            :title="$t('trading.openTrades')"
             :active-trades="true"
-            empty-text="Currently no open trades."
+            :empty-text="$t('trading.noOpenTrades')"
           />
         </DraggableContainer>
       </GridItem>
@@ -201,13 +209,13 @@ function refreshOHLCV(pair: string, columns: string[]) {
         :h="gridLayoutTradeHistory.h"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Closed Trades">
+        <DraggableContainer :header="$t('trading.closedTrades')">
           <TradeList
             class="trade-history"
             :trades="botStore.activeBot.closedTrades"
-            title="Trade history"
+            :title="$t('trading.tradeHistory')"
             :show-filter="true"
-            empty-text="No closed trades so far."
+            :empty-text="$t('trading.noClosedTrades')"
           />
         </DraggableContainer>
       </GridItem>
@@ -226,7 +234,7 @@ function refreshOHLCV(pair: string, columns: string[]) {
         :min-h="4"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Trade Detail">
+        <DraggableContainer :header="$t('trading.tradeDetail')">
           <TradeDetail
             :trade="botStore.activeBot.tradeDetail"
             :stake-currency="botStore.activeBot.stakeCurrency"
@@ -244,7 +252,7 @@ function refreshOHLCV(pair: string, columns: string[]) {
         :min-h="6"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Chart">
+        <DraggableContainer :header="$t('trading.chart')">
           <CandleChartContainer
             :available-pairs="botStore.activeBot.whitelist"
             :historic-view="!!false"

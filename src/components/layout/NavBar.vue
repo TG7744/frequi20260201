@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import Menu from 'primevue/menu';
 import type { MenuItem } from 'primevue/menuitem';
 import { breakpointsTailwind } from '@vueuse/core';
+import { useI18n } from 'vue-i18n';
 
 const botStore = useBotStore();
 
@@ -16,6 +17,7 @@ const favicon = ref<Favico | undefined>(undefined);
 const pingInterval = ref<number>();
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
+const { t } = useI18n();
 
 const isMobile = breakpoints.smallerOrEqual('md');
 
@@ -55,7 +57,7 @@ const resetDynamicLayout = (): void => {
   }
 };
 const setTitle = () => {
-  let title = 'freqUI';
+  let title = t('common.appShortName');
   if (settingsStore.openTradesInTitle === OpenTradeVizOptions.asTitle) {
     title = `(${botStore.activeBotorUndefined?.openTradeCount}) ${title}`;
   }
@@ -100,43 +102,43 @@ watch(
 );
 
 // Navigation items array
-const navItems = ref([
+const navItems = computed(() => [
   {
-    label: 'Trade',
+    label: t('nav.trade'),
     to: '/trade',
     visible: computed(() => !botStore.canRunBacktest),
     icon: 'i-mdi-currency-usd',
   },
   {
-    label: 'Dashboard',
+    label: t('nav.dashboard'),
     to: '/dashboard',
     visible: computed(() => !botStore.canRunBacktest),
     icon: 'i-mdi-view-dashboard',
   },
   {
-    label: 'Chart',
+    label: t('nav.chart'),
     to: '/graph',
     icon: 'i-mdi-chart-line',
   },
   {
-    label: 'Logs',
+    label: t('nav.logs'),
     to: '/logs',
     icon: 'i-mdi-format-list-bulleted',
   },
   {
-    label: 'Settings',
+    label: t('nav.settings'),
     to: '/settings',
     mobileOnly: true,
     icon: 'i-mdi-cog',
   },
   {
-    label: 'Backtest',
+    label: t('nav.backtest'),
     to: '/backtest',
     visible: computed(() => botStore.canRunBacktest),
     icon: 'i-mdi-currency-usd',
   },
   {
-    label: 'Download Data',
+    label: t('nav.downloadData'),
     to: '/download_data',
     visible: computed(
       () => botStore.isWebserverMode && botStore.activeBot.botFeatures.downloadDataView,
@@ -144,7 +146,7 @@ const navItems = ref([
     icon: 'i-mdi-download',
   },
   {
-    label: 'Pairlist Config',
+    label: t('nav.pairlistConfig'),
     to: '/pairlist_config',
     icon: 'i-mdi-format-list-numbered-rtl',
     visible: computed(
@@ -157,16 +159,16 @@ const navItems = ref([
 
 const menuItems = computed<MenuItem[]>(() => [
   {
-    label: `V: ${settingsStore.uiVersion}`,
+    label: t('nav.versionTag', { version: settingsStore.uiVersion }),
     disabled: true,
   },
   {
-    label: 'Settings',
+    label: t('nav.settings'),
     icon: 'i-mdi-cog',
     command: () => router.push('/settings'),
   },
   {
-    label: 'Lock dynamic Layout',
+    label: t('nav.lockLayout'),
     checkbox: true,
     checked: layoutStore.layoutLocked,
     command: () => {
@@ -174,12 +176,12 @@ const menuItems = computed<MenuItem[]>(() => [
     },
   },
   {
-    label: 'Reset Layout',
+    label: t('nav.resetLayout'),
     icon: 'i-mdi-lock-reset',
     command: resetDynamicLayout,
   },
   {
-    label: 'Logout',
+    label: t('nav.logout'),
     icon: 'i-mdi-logout',
     command: clickLogout,
     visible: botStore.hasBots && botStore.botCount === 1,
@@ -196,8 +198,14 @@ const drawerVisible = ref(false);
   <header>
     <div class="flex bg-primary-500 border-b border-primary">
       <RouterLink class="ms-2 flex flex-row items-center pe-2 gap-2" exact to="/">
-        <img class="h-[30px] align-middle" src="@/assets/freqtrade-logo.png" alt="Home Logo" />
-        <span class="text-slate-200 text-xl md:hidden lg:inline text-nowrap">Freqtrade UI</span>
+        <img
+          class="h-[30px] align-middle"
+          src="@/assets/freqtrade-logo.png"
+          :alt="$t('nav.homeLogoAlt')"
+        />
+        <span class="text-slate-200 text-xl md:hidden lg:inline text-nowrap">{{
+          $t('common.appName')
+        }}</span>
       </RouterLink>
       <div class="flex justify-between w-full text-center items-center ms-3">
         <div class="items-center hidden md:flex gap-5 ms-5">
@@ -213,6 +221,7 @@ const drawerVisible = ref(false);
             {{ item.label }}
           </RouterLink>
           <ThemeSelect />
+          <LanguageSwitch />
         </div>
 
         <!-- Right aligned nav items -->
@@ -221,7 +230,7 @@ const drawerVisible = ref(false);
           <div
             v-if="!settingsStore.confirmDialog"
             class="my-auto me-5 flex text-yellow-300"
-            title="Confirm dialog deactivated, Forced exits will be executed immediately. Be careful."
+            :title="$t('nav.confirmDialogWarning')"
           >
             <i-mdi-run-fast />
             <i-mdi-alert />
@@ -247,26 +256,26 @@ const drawerVisible = ref(false);
                 <BotEntry :bot="option" :no-buttons="true" />
               </template>
             </Select>
-            <ReloadControl class="me-3" title="Confirm Dialog deactivated." />
+            <ReloadControl class="me-3" :title="$t('nav.confirmDialogShort')" />
           </div>
-          <div
-            class="hidden md:flex md:flex-wrap lg:flex-nowrap items-center nav-item text-surface-300 me-2"
-          >
-            <span class="text-sm me-2">
-              {{
-                (botStore.activeBotorUndefined && botStore.activeBotorUndefined.botName) ||
-                'No bot selected'
-              }}
-            </span>
-            <span v-if="botStore.botCount === 1">
-              {{
-                botStore.activeBotorUndefined && botStore.activeBotorUndefined.isBotOnline
-                  ? 'Online'
-                  : 'Offline'
-              }}
-            </span>
-          </div>
-          <div v-if="botStore.hasBots" class="flex items-center">
+            <div
+              class="hidden md:flex md:flex-wrap lg:flex-nowrap items-center nav-item text-surface-300 me-2"
+            >
+              <span class="text-sm me-2">
+                {{
+                  (botStore.activeBotorUndefined && botStore.activeBotorUndefined.botName) ||
+                $t('nav.noBotSelected')
+                }}
+              </span>
+              <span v-if="botStore.botCount === 1">
+                {{
+                  botStore.activeBotorUndefined && botStore.activeBotorUndefined.isBotOnline
+                  ? $t('common.online')
+                  : $t('common.offline')
+                }}
+              </span>
+            </div>
+            <div v-if="botStore.hasBots" class="flex items-center">
             <!-- Hide dropdown on xs, instead show below  -->
             <Button severity="contrast" variant="text" size="small" @click="toggleMenu">
               <div class="flex items-center">
@@ -313,13 +322,15 @@ const drawerVisible = ref(false);
           </Button>
           <Drawer
             v-model:visible="drawerVisible"
-            header="Drawer"
+            :header="$t('nav.drawerHeader')"
             position="right"
             class="bg-primary-500"
           >
             <template #container>
               <div class="flex flex-row items-center">
-                <h3 class="text-xl font-bold w-full text-center text-surface-200">Freqtrade UI</h3>
+                <h3 class="text-xl font-bold w-full text-center text-surface-200">
+                  {{ $t('common.appName') }}
+                </h3>
                 <Button
                   class="float-right mt-1 me-1"
                   variant="outlined"
@@ -342,11 +353,14 @@ const drawerVisible = ref(false);
                 </RouterLink>
                 <Divider />
                 <span class="text-surface-200 text-center"
-                  >Version: {{ settingsStore.uiVersion }}</span
+                  >{{ $t('nav.versionLabel') }}: {{ settingsStore.uiVersion }}</span
                 >
 
                 <div class="flex flex-row items-center justify-center">
                   <ThemeSelect show-text />
+                </div>
+                <div class="flex flex-row items-center justify-center">
+                  <LanguageSwitch />
                 </div>
                 <Select
                   v-if="botStore.botCount > 1"
@@ -368,7 +382,10 @@ const drawerVisible = ref(false);
                     <BotEntry :bot="option" :no-buttons="true" />
                   </template>
                 </Select>
-                <ReloadControl class="justify-center w-full" title="Confirm Dialog deactivated." />
+                <ReloadControl
+                  class="justify-center w-full"
+                  :title="$t('nav.confirmDialogShort')"
+                />
               </div>
             </template>
           </Drawer>
