@@ -154,7 +154,6 @@ if (pairlistStore.whitelist.length > 0) {
         class="mb-2"
         size="small"
         :allow-empty="false"
-        option-label="value"
         option-value="value"
         :options="[
           { value: 'Config', label: $t('pairlist.configTab') },
