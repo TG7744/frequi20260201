@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { ExchangeSelection } from '@/types';
+import { useI18n } from 'vue-i18n';
 
 const exchangeModel = defineModel<ExchangeSelection>({ required: true });
 
 const botStore = useBotStore();
 
+const { t } = useI18n();
 const exchangeList = computed(() => {
   const supported = botStore.activeBot.exchangeList
     .filter((ex) => ex.valid && ex.supported)
@@ -16,11 +18,11 @@ const exchangeList = computed(() => {
 
   return [
     {
-      label: 'Supported',
+      label: t('exchange.supported'),
       options: supported.map((e) => ({ value: e.classname ?? e.name, text: e.name })),
     },
     {
-      label: 'Unsupported',
+      label: t('exchange.unsupported'),
       options: unsupported.map((e) => ({ value: e.classname ?? e.name, text: e.name })),
     },
   ];

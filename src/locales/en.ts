@@ -155,6 +155,51 @@ const en = {
       "Use live data from the exchange. Only use if you don't have data downloaded locally.",
     timeframe: 'Timeframe',
   },
+  exchange: {
+    supported: 'Supported',
+    unsupported: 'Unsupported',
+  },
+  pairlist: {
+    stakeCurrency: 'Stake currency',
+    customExchange: 'Custom Exchange',
+    firstGeneratorHint:
+      'First entry in the pairlist must be a Generating pairlist, like StaticPairList or VolumePairList.',
+    configTab: 'Config',
+    resultsTab: 'Results',
+    dragHere: 'Drag pairlist here',
+  },
+  downloadData: {
+    title: 'Downloading Data',
+    selectPairs: 'Select Pairs',
+    pairsFromTemplate: 'Pairs from template',
+    pairPlaceholder: 'Pair',
+    usePairsHint:
+      'Add all pairs from Pairlist Config - requires the pairlist config to have ran first.',
+    usePairsFromConfig: 'Use Pairs from Pairlist Config',
+    selectTimeframes: 'Select timeframes',
+    timeframePlaceholder: 'Timeframe',
+    timeSelection: 'Time Selection',
+    useCustomTimerange: 'Use custom timerange',
+    daysToDownload: 'Days to download:',
+    advancedOptions: 'Advanced Options',
+    advancedHint:
+      'Advanced options (Erase data, Download trades, and Custom Exchange settings) will only be applied when this section is expanded.',
+    erase: 'Erase existing data',
+    downloadTrades: 'Download Trades instead of OHLCV data',
+    candlePlaceholder: 'Select Candle Types',
+    candleHint:
+      'When no candle-type is selected, freqtrade will download the necessary candle types automatically.',
+    customExchange: 'Custom Exchange',
+    start: 'Start Download',
+    candleTypes: {
+      spot: 'Spot',
+      futures: 'Futures',
+      funding: 'Funding Rate',
+      mark: 'Mark',
+      index: 'Index',
+      premium: 'Premium Index',
+    },
+  },
   dashboard: {
     profitOverTime: 'Profit over time {suffix}',
     combined: 'combined',

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { DownloadDataPayload, ExchangeSelection } from '@/types';
 import { MarginMode, TradingMode } from '@/types';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const botStore = useBotStore();
 const pairlistStore = usePairlistConfigStore();
@@ -35,14 +37,15 @@ const downloadTrades = ref(false);
 // State to track the collapse status
 const isAdvancedOpen = ref(false);
 const candleType = ref<string[]>([]);
-const candleTypes = [
-  { text: 'Spot', value: 'spot' },
-  { text: 'Futures', value: 'futures' },
-  { text: 'Funding Rate', value: 'funding_rate' },
-  { text: 'Mark', value: 'mark' },
-  { text: 'Index', value: 'index' },
-  { text: 'Premium Index', value: 'premiumIndex' },
-];
+const { t } = useI18n();
+const candleTypes = computed(() => [
+  { text: t('downloadData.candleTypes.spot'), value: 'spot' },
+  { text: t('downloadData.candleTypes.futures'), value: 'futures' },
+  { text: t('downloadData.candleTypes.funding'), value: 'funding_rate' },
+  { text: t('downloadData.candleTypes.mark'), value: 'mark' },
+  { text: t('downloadData.candleTypes.index'), value: 'index' },
+  { text: t('downloadData.candleTypes.premium'), value: 'premiumIndex' },
+]);
 
 function addPairs(_pairs: string[]) {
   pairs.value.push(..._pairs);
@@ -87,7 +90,7 @@ async function startDownload() {
 <template>
   <div class="px-1 mx-auto w-full max-w-4xl lg:max-w-7xl">
     <BackgroundJobTracking class="mb-4" />
-    <DraggableContainer header="Downloading Data" class="mx-1 p-4">
+    <DraggableContainer :header="$t('downloadData.title')" class="mx-1 p-4">
       <div class="flex mb-3 gap-3 flex-col">
         <div class="flex flex-col gap-3">
           <div class="flex flex-col lg:flex-row gap-3">
@@ -95,11 +98,16 @@ async function startDownload() {
             <div class="flex-fill">
               <div class="flex flex-col gap-2">
                 <div class="flex justify-between">
-                  <h4 class="text-start font-bold text-lg">Select Pairs</h4>
-                  <h5 class="text-start font-bold text-lg">Pairs from template</h5>
+                  <h4 class="text-start font-bold text-lg">{{ $t('downloadData.selectPairs') }}</h4>
+                  <h5 class="text-start font-bold text-lg">{{ $t('downloadData.pairsFromTemplate') }}</h5>
                 </div>
                 <div class="flex gap-2">
-                  <BaseStringList v-model="pairs" placeholder="Pair" size="small" class="grow" />
+                  <BaseStringList
+                    v-model="pairs"
+                    :placeholder="$t('downloadData.pairPlaceholder')"
+                    size="small"
+                    class="grow"
+                  />
                   <div class="flex flex-col gap-1">
                     <div class="flex flex-col gap-1">
                       <Button
@@ -115,11 +123,11 @@ async function startDownload() {
                     <Divider />
                     <Button
                       :disabled="pairlistStore.whitelist.length === 0"
-                      title="Add all pairs from Pairlist Config - requires the pairlist config to have ran first."
+                      :title="$t('downloadData.usePairsHint')"
                       severity="secondary"
                       @click="replacePairs(pairlistStore.whitelist)"
                     >
-                      Use Pairs from Pairlist Config
+                      {{ $t('downloadData.usePairsFromConfig') }}
                     </Button>
                   </div>
                 </div>
@@ -129,8 +137,8 @@ async function startDownload() {
             <!-- Timeframes section -->
             <div class="flex-fill px-3">
               <div class="flex flex-col gap-2">
-                <h4 class="text-start font-bold text-lg">Select timeframes</h4>
-                <BaseStringList v-model="timeframes" placeholder="Timeframe" />
+                <h4 class="text-start font-bold text-lg">{{ $t('downloadData.selectTimeframes') }}</h4>
+                <BaseStringList v-model="timeframes" :placeholder="$t('downloadData.timeframePlaceholder')" />
               </div>
             </div>
           </div>
@@ -139,9 +147,9 @@ async function startDownload() {
           <div class="px-3 border dark:border-surface-700 border-surface-300 p-2 rounded-sm">
             <div class="flex flex-col gap-2">
               <div class="flex justify-between items-center">
-                <h4 class="text-start mb-0 font-bold text-lg">Time Selection</h4>
+                <h4 class="text-start mb-0 font-bold text-lg">{{ $t('downloadData.timeSelection') }}</h4>
                 <BaseCheckbox v-model="timeSelection.useCustomTimerange" class="mb-0" switch>
-                  Use custom timerange
+                  {{ $t('downloadData.useCustomTimerange') }}
                 </BaseCheckbox>
               </div>
 
@@ -149,11 +157,11 @@ async function startDownload() {
                 <TimeRangeSelect v-model="timeSelection.timerange" />
               </div>
               <div v-else class="flex items-center gap-2">
-                <label>Days to download:</label>
+                <label>{{ $t('downloadData.daysToDownload') }}</label>
                 <InputNumber
                   v-model="timeSelection.days"
                   type="number"
-                  aria-label="Days to download"
+                  :aria-label="$t('downloadData.daysToDownload')"
                   :min="1"
                   :step="1"
                   size="small"
@@ -167,22 +175,21 @@ async function startDownload() {
             class="mb-2 border dark:border-surface-700 border-surface-300 rounded-sm p-2 text-start"
           >
             <Button class="mb-2" severity="secondary" @click="isAdvancedOpen = !isAdvancedOpen">
-              Advanced Options
+              {{ $t('downloadData.advancedOptions') }}
               <i-mdi-chevron-down v-if="!isAdvancedOpen" />
               <i-mdi-chevron-up v-else />
             </Button>
             <Transition>
               <div v-show="isAdvancedOpen">
                 <Message severity="info" class="mb-2 py-2">
-                  Advanced options (Erase data, Download trades, and Custom Exchange settings) will
-                  only be applied when this section is expanded.
+                  {{ $t('downloadData.advancedHint') }}
                 </Message>
                 <div
                   class="mb-2 border dark:border-surface-700 border-surface-300 rounded-md p-2 text-start"
                 >
-                  <BaseCheckbox v-model="erase" class="mb-2">Erase existing data</BaseCheckbox>
+                  <BaseCheckbox v-model="erase" class="mb-2">{{ $t('downloadData.erase') }}</BaseCheckbox>
                   <BaseCheckbox v-model="downloadTrades" class="mb-2">
-                    Download Trades instead of OHLCV data
+                    {{ $t('downloadData.downloadTrades') }}
                   </BaseCheckbox>
                   <div class="grid grid-cols md:grid-cols-2 items-center gap-2">
                     <MultiSelect
@@ -191,11 +198,10 @@ async function startDownload() {
                       :options="candleTypes"
                       option-label="text"
                       option-value="value"
-                      placeholder="Select Candle Types"
+                      :placeholder="$t('downloadData.candlePlaceholder')"
                     />
                     <small
-                      >When no candle-type is selected, freqtrade will download the necessary candle
-                      types for regular operation automatically.</small
+                      >{{ $t('downloadData.candleHint') }}</small
                     >
                   </div>
                 </div>
@@ -203,7 +209,7 @@ async function startDownload() {
                   class="mb-2 border dark:border-surface-700 border-surface-300 rounded-md p-2 text-start"
                 >
                   <BaseCheckbox v-model="exchange.customExchange" class="mb-2">
-                    Custom Exchange
+                    {{ $t('downloadData.customExchange') }}
                   </BaseCheckbox>
                   <Transition name="fade">
                     <ExchangeSelect
@@ -217,7 +223,7 @@ async function startDownload() {
           </div>
 
           <div class="px-3">
-            <Button severity="primary" @click="startDownload">Start Download</Button>
+            <Button severity="primary" @click="startDownload">{{ $t('downloadData.start') }}</Button>
           </div>
         </div>
       </div>

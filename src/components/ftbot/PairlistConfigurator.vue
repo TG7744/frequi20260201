@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Pairlist } from '@/types';
 import { useSortable, moveArrayElement } from '@vueuse/integrations/useSortable';
+import { useI18n } from 'vue-i18n';
 
 const botStore = useBotStore();
 const pairlistStore = usePairlistConfigStore();
@@ -9,6 +10,7 @@ const availablePairlists = ref<Pairlist[]>([]);
 const pairlistConfigsEl = ref<HTMLElement | null>(null);
 const availablePairlistsEl = ref<HTMLElement | null>(null);
 const selectedView = ref<'Config' | 'Results'>('Config');
+const { t } = useI18n();
 
 const configEmpty = computed(() => {
   return pairlistStore.config.pairlists.length == 0;
@@ -107,13 +109,13 @@ if (pairlistStore.whitelist.length > 0) {
       <PairlistConfigActions />
       <div class="border rounded-sm border-surface-500 p-2 mb-2">
         <div class="flex items-center gap-2 my-2">
-          <span class="col-auto">Stake currency: </span>
+          <span class="col-auto">{{ $t('pairlist.stakeCurrency') }}: </span>
           <InputText v-model="pairlistStore.stakeCurrency" size="small" />
         </div>
 
         <div class="mb-2 border rounded-sm border-surface-500 p-2 text-start">
           <BaseCheckbox v-model="pairlistStore.customExchange" class="mb-2">
-            Custom Exchange
+            {{ $t('pairlist.customExchange') }}
           </BaseCheckbox>
           <Transition name="fade">
             <ExchangeSelect
@@ -129,13 +131,13 @@ if (pairlistStore.whitelist.length > 0) {
         class="my-2"
         severity="warn"
       >
-        First entry in the pairlist must be a Generating pairlist, like StaticPairList or
-        VolumePairList.
+        {{ $t('pairlist.firstGeneratorHint') }}
       </Message>
       <div
         ref="pairlistConfigsEl"
         class="flex flex-col grow relative border rounded-sm border-surface-500 p-1 gap-2 min-h-32"
         :class="{ empty: configEmpty }"
+        :data-empty-text="$t('pairlist.dragHere')"
       >
         <PairlistConfigItem
           v-for="(pairlist, i) in pairlistStore.config.pairlists"
@@ -155,10 +157,12 @@ if (pairlistStore.whitelist.length > 0) {
         option-label="value"
         option-value="value"
         :options="[
-          { value: 'Config' },
-          { value: 'Results', disabled: pairlistStore.whitelist.length === 0 },
+          { value: 'Config', label: $t('pairlist.configTab') },
+          { value: 'Results', label: $t('pairlist.resultsTab'), disabled: pairlistStore.whitelist.length === 0 },
         ]"
         option-disabled="disabled"
+        option-label="label"
+        aria-label="pairlist view switch"
       >
       </SelectButton>
       <div class="relative overflow-auto">
@@ -188,7 +192,7 @@ if (pairlistStore.whitelist.length > 0) {
 }
 
 .empty:after {
-  content: 'Drag pairlist here';
+  content: attr(data-empty-text);
   position: absolute;
   align-self: center;
   font-size: 1.1rem;
